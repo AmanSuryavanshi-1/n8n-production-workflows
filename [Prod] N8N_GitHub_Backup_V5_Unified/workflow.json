@@ -1,0 +1,1217 @@
+{
+  "updatedAt": "2026-01-06T12:07:14.615Z",
+  "createdAt": "2026-01-06T06:39:38.326Z",
+  "id": "hgsJiJIAD9npOQQh",
+  "name": "Antigravity - GitHub Backup V5 (Unified)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "position": [
+        0,
+        208
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "position": [
+        0,
+        400
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "fetch-workflows",
+      "name": "Fetch All Workflows",
+      "position": [
+        224,
+        304
+      ],
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "credentials": "***REDACTED***"
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all();\nreturn all.filter(item => item.json.isArchived !== true);"
+      },
+      "id": "filter-active",
+      "name": "Filter Active Only",
+      "position": [
+        448,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-batches",
+      "name": "Split Batches",
+      "position": [
+        672,
+        304
+      ],
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "wait-node",
+      "name": "Wait (Rate Limit)",
+      "position": [
+        896,
+        240
+      ],
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "webhookId": "b4f7ff4b-46bd-4753-8607-87bb6d3baec0"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.aviatorstrainingcentre.in/webhook/backup-worker",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "call-webhook",
+      "name": "Call Worker Webhook",
+      "position": [
+        1120,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "backup-worker",
+        "options": {}
+      },
+      "id": "webhook-worker",
+      "name": "Backup Worker",
+      "position": [
+        0,
+        720
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "webhookId": "fabf7b7a-074c-4116-8462-d53aafbf993d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "position": [
+        224,
+        720
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "/* V5.0 WORKER CONFIG */\nconst SENSITIVE_REGEX = /password|token|secret|api_?key|auth|bearer|credential|private_?key/i;\nconst REPO_OWNER = 'AmanSuryavanshi-1';\nconst REPO_NAME = 'n8n_Workflows';\n\nconst input = $input.first().json.body || $input.first().json; // Handle Webhook Body\nif (!input.name) return { json: { skipped: true } };\n\nfunction scrub(obj) {\n  if (typeof obj !== 'object' || obj === null) return obj;\n  if (Array.isArray(obj)) return obj.map(scrub);\n  const clean = {};\n  for (const [k, v] of Object.entries(obj)) {\n    if (SENSITIVE_REGEX.test(k)) clean[k] = '***REDACTED***';\n    else clean[k] = scrub(v);\n  }\n  return clean;\n}\nconst scrubbed = scrub(input);\n\nlet root = '_Unsorted';\nlet sub = '';\nif (input.tags) {\n  const pTag = input.tags.find(t => t.name.startsWith('Project:'));\n  if (pTag) root = pTag.name.replace('Project:', '').trim();\n  const sTag = input.tags.find(t => t.name.startsWith('Sub:'));\n  if (sTag) sub = sTag.name.replace('Sub:', '').trim() + '/';\n}\nconst safeName = input.name.replace(/[^a-zA-Z0-9-_]/g, '_');\nconst targetPath = `${root}/${sub}${safeName}/workflow.json`;\nconst readmePath = `${root}/${sub}${safeName}/README.md`;\n\nreturn { json: { \n  scrubbed, \n  targetPath, \n  readmePath,\n  repoOwner: REPO_OWNER, \n  repoName: REPO_NAME,\n  id: input.id\n} };"
+      },
+      "id": "config-scrub",
+      "name": "1. Config & Scrub",
+      "position": [
+        448,
+        720
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/search/code?q=filename:workflow.json+repo:{{ $json.repoOwner }}/{{ $json.repoName }}+{{ $json.id }}",
+        "authentication": "***REDACTED***",
+        "nodeCredentialType": "***REDACTED***",
+        "options": {}
+      },
+      "id": "smart-search",
+      "name": "2. Smart Search (HTTP)",
+      "position": [
+        672,
+        720
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": "***REDACTED***"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.total_count > 0 }}",
+              "value2": "={{ true }}"
+            }
+          ]
+        }
+      },
+      "id": "found-check",
+      "name": "2.1 Found?",
+      "position": [
+        896,
+        720
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $('1. Config & Scrub').item.json.repoOwner }}/{{ $('1. Config & Scrub').item.json.repoName }}/contents/{{ $json.items[0].path }}",
+        "authentication": "***REDACTED***",
+        "nodeCredentialType": "***REDACTED***",
+        "options": {}
+      },
+      "id": "get-search",
+      "name": "2.2 Get via Search",
+      "position": [
+        1120,
+        624
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": "***REDACTED***",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $('1. Config & Scrub').item.json.repoOwner }}/{{ $('1. Config & Scrub').item.json.repoName }}/contents/{{ $('1. Config & Scrub').item.json.targetPath }}",
+        "authentication": "***REDACTED***",
+        "nodeCredentialType": "***REDACTED***",
+        "options": {}
+      },
+      "id": "get-path",
+      "name": "2.3 Get via Path",
+      "position": [
+        1120,
+        816
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": "***REDACTED***",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "/* V5.0 SMART DIFF */\nconst local = $('1. Config & Scrub').item.json.scrubbed;\nconst remoteRaw = $input.first().json; \n\nlet remoteContent = null;\nlet sha = null;\nlet targetPath = $('1. Config & Scrub').item.json.targetPath;\n\nif (remoteRaw && remoteRaw.content) {\n   remoteContent = Buffer.from(remoteRaw.content, 'base64').toString('utf8');\n   sha = remoteRaw.sha;\n   if (remoteRaw.path) targetPath = remoteRaw.path; // Keep existing path (Identity Preservation)\n}\n\nconst localString = JSON.stringify(local, null, 2);\nconst remoteString = remoteContent ? JSON.stringify(JSON.parse(remoteContent), null, 2) : '';\n\nconst hasChanges = localString !== remoteString;\n\nreturn { json: {\n  hasChanges,\n  sha,\n  targetPath,\n  contentBase64: Buffer.from(localString).toString('base64'),\n  repoOwner: $('1. Config & Scrub').item.json.repoOwner,\n  repoName: $('1. Config & Scrub').item.json.repoName\n} };"
+      },
+      "id": "smart-diff",
+      "name": "3. Smart Diff",
+      "position": [
+        1344,
+        720
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.hasChanges }}",
+              "value2": "={{ true }}"
+            }
+          ]
+        }
+      },
+      "id": "changes-check",
+      "name": "Changes?",
+      "position": [
+        1568,
+        720
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/contents/{{ $json.targetPath }}",
+        "authentication": "***REDACTED***",
+        "nodeCredentialType": "***REDACTED***",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"message\": \"backup: {{ $json.targetPath }}\", \"content\": \"{{ $json.contentBase64 }}\", \"sha\": \"{{ $json.sha || undefined }}\" }",
+        "options": {}
+      },
+      "id": "push-github",
+      "name": "Push to GitHub",
+      "position": [
+        1792,
+        720
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": "***REDACTED***",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !!$json.content }}",
+              "value2": "={{ true }}"
+            }
+          ]
+        }
+      },
+      "id": "push-success",
+      "name": "Push Success?",
+      "position": [
+        2016,
+        720
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "Error Trigger",
+      "position": [
+        1552,
+        256
+      ],
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "\n**Stream B: Worker (Bottom)**\n- Triggered via Internal Webhook.\n- **Scrub:** Redacts secrets.\n- **Smart Search:** Finds moved files.\n- **Push:** Only if changed.",
+        "height": 416,
+        "width": 2208,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "a4d88fc9-5bf1-4d10-8d87-7922286d0125",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "### 🏭 V5.0 Unified Backup (Loop-to-Webhook)\n\n**Stream A: Manager (Top)**\n- Fetches all workflows.\n- **Waits 2s** (Rate Limit: 30/min).\n- Sends each item to Stream B.",
+        "height": 508,
+        "width": 1328
+      },
+      "id": "3d88d980-6d84-44d9-a189-e825e5b5a5ff",
+      "name": "Sticky Note2",
+      "position": [
+        -48,
+        48
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sendTo": "work89890@gmail.com",
+        "subject": "=n8n Workflow Failure:  {{$json[\"workflow\"][\"name\"]}}",
+        "message": "=Workflow: {{$json[\"workflow\"][\"name\"]}} Error: {{$json[\"execution\"][\"error\"][\"message\"]}} Last node executed: {{$json[\"execution\"][\"lastNodeExecuted\"]}} Execution URL: {{$json[\"execution\"][\"url\"]}} Stacktrace: {{$json[\"execution\"][\"error\"][\"stack\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        256
+      ],
+      "id": "017e57ad-2466-47df-ae45-4815a7ab8234",
+      "name": "Send a message",
+      "webhookId": "52a72b13-3653-484a-983d-cb504796a45f",
+      "credentials": "***REDACTED***"
+    },
+    {
+      "parameters": {
+        "content": "## ERROR HANDLING",
+        "height": 224,
+        "width": 512,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1472,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "3d9f62fa-9fa4-4b53-a2cf-df244f1bd8ba",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "1. Config & Scrub": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "2. Smart Search (HTTP)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "2. Smart Search (HTTP)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "2.1 Found?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "2.1 Found?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "2.2 Get via Search",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "2.3 Get via Path",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "2.2 Get via Search": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "3. Smart Diff",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "2.3 Get via Path": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "3. Smart Diff",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "3. Smart Diff": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Changes?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Backup Worker": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Respond to Webhook",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Call Worker Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Split Batches",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Changes?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Push to GitHub",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch All Workflows": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Filter Active Only",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Filter Active Only": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Split Batches",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Fetch All Workflows",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Push to GitHub": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Push Success?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "1. Config & Scrub",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Fetch All Workflows",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Split Batches": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Wait (Rate Limit)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Wait (Rate Limit)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call Worker Webhook",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "df985ede-7266-41f5-9448-40e61bcbbc5e",
+  "activeVersionId": "df985ede-7266-41f5-9448-40e61bcbbc5e",
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-01-06T06:39:38.378Z",
+      "createdAt": "2026-01-06T06:39:38.378Z",
+      "role": "workflow:owner",
+      "workflowId": "hgsJiJIAD9npOQQh",
+      "projectId": "Jg5xBhph4gPhWpvo"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-01-06T12:07:17.000Z",
+    "createdAt": "2026-01-06T12:07:14.620Z",
+    "versionId": "df985ede-7266-41f5-9448-40e61bcbbc5e",
+    "workflowId": "hgsJiJIAD9npOQQh",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "id": "schedule-trigger",
+        "name": "Schedule Trigger",
+        "position": [
+          0,
+          208
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {},
+        "id": "manual-trigger",
+        "name": "Manual Trigger",
+        "position": [
+          0,
+          400
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "filters": {},
+          "requestOptions": {}
+        },
+        "id": "fetch-workflows",
+        "name": "Fetch All Workflows",
+        "position": [
+          224,
+          304
+        ],
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "credentials": "***REDACTED***"
+      },
+      {
+        "parameters": {
+          "jsCode": "const all = $input.all();\nreturn all.filter(item => item.json.isArchived !== true);"
+        },
+        "id": "filter-active",
+        "name": "Filter Active Only",
+        "position": [
+          448,
+          304
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "id": "split-batches",
+        "name": "Split Batches",
+        "position": [
+          672,
+          304
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "amount": 2,
+          "unit": "seconds"
+        },
+        "id": "wait-node",
+        "name": "Wait (Rate Limit)",
+        "position": [
+          896,
+          240
+        ],
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1,
+        "webhookId": "b4f7ff4b-46bd-4753-8607-87bb6d3baec0"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.aviatorstrainingcentre.in/webhook/backup-worker",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json) }}",
+          "options": {}
+        },
+        "id": "call-webhook",
+        "name": "Call Worker Webhook",
+        "position": [
+          1120,
+          304
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "backup-worker",
+          "options": {}
+        },
+        "id": "webhook-worker",
+        "name": "Backup Worker",
+        "position": [
+          0,
+          720
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "webhookId": "fabf7b7a-074c-4116-8462-d53aafbf993d"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "respond-webhook",
+        "name": "Respond to Webhook",
+        "position": [
+          224,
+          720
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "jsCode": "/* V5.0 WORKER CONFIG */\nconst SENSITIVE_REGEX = /password|token|secret|api_?key|auth|bearer|credential|private_?key/i;\nconst REPO_OWNER = 'AmanSuryavanshi-1';\nconst REPO_NAME = 'n8n_Workflows';\n\nconst input = $input.first().json.body || $input.first().json; // Handle Webhook Body\nif (!input.name) return { json: { skipped: true } };\n\nfunction scrub(obj) {\n  if (typeof obj !== 'object' || obj === null) return obj;\n  if (Array.isArray(obj)) return obj.map(scrub);\n  const clean = {};\n  for (const [k, v] of Object.entries(obj)) {\n    if (SENSITIVE_REGEX.test(k)) clean[k] = '***REDACTED***';\n    else clean[k] = scrub(v);\n  }\n  return clean;\n}\nconst scrubbed = scrub(input);\n\nlet root = '_Unsorted';\nlet sub = '';\nif (input.tags) {\n  const pTag = input.tags.find(t => t.name.startsWith('Project:'));\n  if (pTag) root = pTag.name.replace('Project:', '').trim();\n  const sTag = input.tags.find(t => t.name.startsWith('Sub:'));\n  if (sTag) sub = sTag.name.replace('Sub:', '').trim() + '/';\n}\nconst safeName = input.name.replace(/[^a-zA-Z0-9-_]/g, '_');\nconst targetPath = `${root}/${sub}${safeName}/workflow.json`;\nconst readmePath = `${root}/${sub}${safeName}/README.md`;\n\nreturn { json: { \n  scrubbed, \n  targetPath, \n  readmePath,\n  repoOwner: REPO_OWNER, \n  repoName: REPO_NAME,\n  id: input.id\n} };"
+        },
+        "id": "config-scrub",
+        "name": "1. Config & Scrub",
+        "position": [
+          448,
+          720
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "url": "=https://api.github.com/search/code?q=filename:workflow.json+repo:{{ $json.repoOwner }}/{{ $json.repoName }}+{{ $json.id }}",
+          "authentication": "***REDACTED***",
+          "nodeCredentialType": "***REDACTED***",
+          "options": {}
+        },
+        "id": "smart-search",
+        "name": "2. Smart Search (HTTP)",
+        "position": [
+          672,
+          720
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": "***REDACTED***"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.total_count > 0 }}",
+                "value2": "={{ true }}"
+              }
+            ]
+          }
+        },
+        "id": "found-check",
+        "name": "2.1 Found?",
+        "position": [
+          896,
+          720
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "url": "=https://api.github.com/repos/{{ $('1. Config & Scrub').item.json.repoOwner }}/{{ $('1. Config & Scrub').item.json.repoName }}/contents/{{ $json.items[0].path }}",
+          "authentication": "***REDACTED***",
+          "nodeCredentialType": "***REDACTED***",
+          "options": {}
+        },
+        "id": "get-search",
+        "name": "2.2 Get via Search",
+        "position": [
+          1120,
+          624
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": "***REDACTED***",
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "url": "=https://api.github.com/repos/{{ $('1. Config & Scrub').item.json.repoOwner }}/{{ $('1. Config & Scrub').item.json.repoName }}/contents/{{ $('1. Config & Scrub').item.json.targetPath }}",
+          "authentication": "***REDACTED***",
+          "nodeCredentialType": "***REDACTED***",
+          "options": {}
+        },
+        "id": "get-path",
+        "name": "2.3 Get via Path",
+        "position": [
+          1120,
+          816
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": "***REDACTED***",
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "/* V5.0 SMART DIFF */\nconst local = $('1. Config & Scrub').item.json.scrubbed;\nconst remoteRaw = $input.first().json; \n\nlet remoteContent = null;\nlet sha = null;\nlet targetPath = $('1. Config & Scrub').item.json.targetPath;\n\nif (remoteRaw && remoteRaw.content) {\n   remoteContent = Buffer.from(remoteRaw.content, 'base64').toString('utf8');\n   sha = remoteRaw.sha;\n   if (remoteRaw.path) targetPath = remoteRaw.path; // Keep existing path (Identity Preservation)\n}\n\nconst localString = JSON.stringify(local, null, 2);\nconst remoteString = remoteContent ? JSON.stringify(JSON.parse(remoteContent), null, 2) : '';\n\nconst hasChanges = localString !== remoteString;\n\nreturn { json: {\n  hasChanges,\n  sha,\n  targetPath,\n  contentBase64: Buffer.from(localString).toString('base64'),\n  repoOwner: $('1. Config & Scrub').item.json.repoOwner,\n  repoName: $('1. Config & Scrub').item.json.repoName\n} };"
+        },
+        "id": "smart-diff",
+        "name": "3. Smart Diff",
+        "position": [
+          1344,
+          720
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.hasChanges }}",
+                "value2": "={{ true }}"
+              }
+            ]
+          }
+        },
+        "id": "changes-check",
+        "name": "Changes?",
+        "position": [
+          1568,
+          720
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "method": "PUT",
+          "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/contents/{{ $json.targetPath }}",
+          "authentication": "***REDACTED***",
+          "nodeCredentialType": "***REDACTED***",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"message\": \"backup: {{ $json.targetPath }}\", \"content\": \"{{ $json.contentBase64 }}\", \"sha\": \"{{ $json.sha || undefined }}\" }",
+          "options": {}
+        },
+        "id": "push-github",
+        "name": "Push to GitHub",
+        "position": [
+          1792,
+          720
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "credentials": "***REDACTED***",
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ !!$json.content }}",
+                "value2": "={{ true }}"
+              }
+            ]
+          }
+        },
+        "id": "push-success",
+        "name": "Push Success?",
+        "position": [
+          2016,
+          720
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {},
+        "id": "error-trigger",
+        "name": "Error Trigger",
+        "position": [
+          1552,
+          256
+        ],
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "content": "\n**Stream B: Worker (Bottom)**\n- Triggered via Internal Webhook.\n- **Scrub:** Redacts secrets.\n- **Smart Search:** Finds moved files.\n- **Push:** Only if changed.",
+          "height": 416,
+          "width": 2208,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -48,
+          576
+        ],
+        "typeVersion": 1,
+        "id": "a4d88fc9-5bf1-4d10-8d87-7922286d0125",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "### 🏭 V5.0 Unified Backup (Loop-to-Webhook)\n\n**Stream A: Manager (Top)**\n- Fetches all workflows.\n- **Waits 2s** (Rate Limit: 30/min).\n- Sends each item to Stream B.",
+          "height": 508,
+          "width": 1328
+        },
+        "id": "3d88d980-6d84-44d9-a189-e825e5b5a5ff",
+        "name": "Sticky Note2",
+        "position": [
+          -48,
+          48
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "sendTo": "work89890@gmail.com",
+          "subject": "=n8n Workflow Failure:  {{$json[\"workflow\"][\"name\"]}}",
+          "message": "=Workflow: {{$json[\"workflow\"][\"name\"]}} Error: {{$json[\"execution\"][\"error\"][\"message\"]}} Last node executed: {{$json[\"execution\"][\"lastNodeExecuted\"]}} Execution URL: {{$json[\"execution\"][\"url\"]}} Stacktrace: {{$json[\"execution\"][\"error\"][\"stack\"]}}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          1776,
+          256
+        ],
+        "id": "017e57ad-2466-47df-ae45-4815a7ab8234",
+        "name": "Send a message",
+        "webhookId": "52a72b13-3653-484a-983d-cb504796a45f",
+        "credentials": "***REDACTED***"
+      },
+      {
+        "parameters": {
+          "content": "## ERROR HANDLING",
+          "height": 224,
+          "width": 512,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1472,
+          192
+        ],
+        "typeVersion": 1,
+        "id": "3d9f62fa-9fa4-4b53-a2cf-df244f1bd8ba",
+        "name": "Sticky Note"
+      }
+    ],
+    "connections": {
+      "1. Config & Scrub": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "2. Smart Search (HTTP)",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "2. Smart Search (HTTP)": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "2.1 Found?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "2.1 Found?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "2.2 Get via Search",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "2.3 Get via Path",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "2.2 Get via Search": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "3. Smart Diff",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "2.3 Get via Path": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "3. Smart Diff",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "3. Smart Diff": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Changes?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Backup Worker": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Call Worker Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Batches",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Changes?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Push to GitHub",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch All Workflows": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter Active Only",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter Active Only": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Batches",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fetch All Workflows",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Push to GitHub": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Push Success?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "1. Config & Scrub",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fetch All Workflows",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Batches": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Wait (Rate Limit)",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Wait (Rate Limit)": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Call Worker Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "***REDACTED***",
+    "name": "Version df985ede",
+    "description": ""
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-01-05T07:18:45.055Z",
+      "createdAt": "2026-01-05T07:18:45.055Z",
+      "id": "VReeeRvXFXE1yxru",
+      "name": "Project: Internal"
+    },
+    {
+      "updatedAt": "2026-01-05T16:17:17.268Z",
+      "createdAt": "2026-01-05T06:43:22.292Z",
+      "id": "q7ssGKeaRx1pSzpN",
+      "name": "Sub: GithubBackup"
+    }
+  ]
+}
