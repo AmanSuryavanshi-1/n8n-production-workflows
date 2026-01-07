@@ -38,7 +38,7 @@ GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**�
 
 ## **Key Features at a Glance**
 
-<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/commit_efficiency_comparison.webp?v=2" width="600" alt="Commit Efficiency" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/commit_efficiency_comparison.webp?v=3" width="600" alt="Commit Efficiency" />
 
 ### 🛡️ **Security: Zero-Trust Redaction**
 - Scans entire workflow JSON (nodes, settings, credentials)
