@@ -38,7 +38,7 @@ GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**‚Ä
 
 ## **Key Features at a Glance**
 
-<img src="assets/commit_efficiency_comparison.png" width="600" alt="Commit Efficiency" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/commit_efficiency_comparison.webp" width="600" alt="Commit Efficiency" />
 
 
 ### üõ°Ô∏è **Security: Zero-Trust Redaction**
@@ -70,7 +70,7 @@ GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**‚Ä
 
 ## **Architecture Overview: Two Streams, One File**
 
-<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_dual_stream_architecture.webp" width="700" alt="Dual Stream Architecture" />
 
 
 ```

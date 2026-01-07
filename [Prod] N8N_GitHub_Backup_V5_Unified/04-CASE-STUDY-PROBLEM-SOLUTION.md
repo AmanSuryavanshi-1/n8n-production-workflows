@@ -250,7 +250,7 @@ Enterprise architects split for scalability. Solo developers need one file.
 
 ## **Phase 3: The Insight (V5 Breakthrough)**
 
-<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_dual_stream_architecture.webp" width="700" alt="Dual Stream Architecture" />
 
 
 ### **The Realization**

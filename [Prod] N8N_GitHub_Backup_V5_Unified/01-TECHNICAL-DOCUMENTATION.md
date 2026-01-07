@@ -51,7 +51,7 @@ STREAM B (Worker):                      Webhook Receive
 **Why This Matters:**
 
 1. **Manager** controls *when* to dispatch work (throttled by Wait node)
-2. **Worker** controls *how* to execute<img src="assets/v5_smart_search_logic_flow.png" width="700" alt="Smart Search Logic" />
+2. **Worker** controls *how* to execute<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_smart_search_logic_flow.webp" width="700" alt="Smart Search Logic" />
 
 #### How It Works (The "No Ghost Files" Logic)
 3. If Worker crashes on item #5, Manager continues dispatching item #6
@@ -70,10 +70,10 @@ The workflow triggers **itself via Webhook**. This is not a hack—it's a clean 
 
 ## **Part 2: Deep Dive into Each Component**
 
-<img src="assets/v5_canvas_overview.png" width="700" alt="V5 Unified Canvas Overview" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_canvas_overview.webp" width="700" alt="V5 Unified Canvas Overview" />
 
 
-<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_dual_stream_architecture.webp" width="700" alt="Dual Stream Architecture" />
 
 
 ### 2.1 Stream A: The Manager (Orchestration Layer)
@@ -525,7 +525,7 @@ GitHub Folder: Internal/GitHub/Backups/WorkflowName.json
 
 ### 6.2 Character Sanitization
 
-<img src="assets/split_tag_organization_flow.png" width="700" alt="Split Tag Organization" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/split_tag_organization_flow.webp" width="700" alt="Split Tag Organization" />
 
 
 Unsafe characters are converted to underscores:
@@ -594,7 +594,7 @@ Our function finds and redacts it.
 
 ### 7.3 What Gets Redacted
 
-<img src="assets/v5_recursive_scrubbing_flow.png" width="700" alt="Recursive Scrubbing Logic" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_recursive_scrubbing_flow.webp" width="700" alt="Recursive Scrubbing Logic" />
 
 
 ```json

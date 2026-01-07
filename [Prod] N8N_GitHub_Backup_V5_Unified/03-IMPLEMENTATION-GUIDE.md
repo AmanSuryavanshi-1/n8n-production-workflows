@@ -1,7 +1,7 @@
 # n8n Workflow Backup to GitHub (V5): Implementation & Setup Guide
 
 
-<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_dual_stream_architecture.webp" width="700" alt="Dual Stream Architecture" />
 
 ## Step-by-Step for Everyone (Technical & Non-Technical)
 
@@ -79,7 +79,7 @@ You need a GitHub repository where backups will be stored.
 
 You should now see the "Antigravity - GitHub Backup V5" workflow in your dashboard.
 
-<img src="assets/v5_canvas_overview.png" width="700" alt="V5 Canvas Overview" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_canvas_overview.webp" width="700" alt="V5 Canvas Overview" />
 
 
 ### **Step 2B: Add GitHub Credentials**
@@ -155,7 +155,7 @@ GitHub Folder: Internal/GitHub/Backups/
 
 ### **Step 3B: Apply Tags to Your Workflows**
 
-<img src="assets/split_tag_organization_flow.png" width="700" alt="Split Tag Logic" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/split_tag_organization_flow.webp" width="700" alt="Split Tag Logic" />
 
 
 1. Go to n8n Dashboard → Workflows
@@ -233,7 +233,7 @@ By default, the workflow runs **daily at midnight**. To change:
    │       └── workflow.json
    ```
 
-   > <img src="assets/v5_real_repo_structure.png" width="500" alt="GitHub Repo Structure" />
+   > <img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_real_repo_structure.webp" width="500" alt="GitHub Repo Structure" />
    > *Verified GitHub Folder Hierarchy*
 
 
