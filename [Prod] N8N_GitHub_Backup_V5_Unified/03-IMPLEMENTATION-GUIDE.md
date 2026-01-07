@@ -1,5 +1,13 @@
-# GitHub Backup V5: Implementation & Setup Guide
+# n8n Workflow Backup to GitHub (V5): Implementation & Setup Guide
+
+
+<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+
 ## Step-by-Step for Everyone (Technical & Non-Technical)
+
+> [!NOTE]
+> This workflow creates **one-way backups from n8n to GitHub**. Restoring from GitHub is a manual process (File > Import).
+
 
 ---
 
@@ -71,6 +79,9 @@ You need a GitHub repository where backups will be stored.
 
 You should now see the "Antigravity - GitHub Backup V5" workflow in your dashboard.
 
+<img src="assets/v5_canvas_overview.png" width="700" alt="V5 Canvas Overview" />
+
+
 ### **Step 2B: Add GitHub Credentials**
 
 1. Open the imported workflow
@@ -114,6 +125,9 @@ const REPO_NAME = 'my-automations';
 
 ### **Step 2D: Test Manual Trigger**
 
+
+*Verified Execution Success*
+
 1. At the top of the workflow, click "Execute Workflow"
 2. Watch the execution unfold
 3. **Expected Result:** No errors, workflow completes in ~10 seconds
@@ -140,6 +154,9 @@ GitHub Folder: Internal/GitHub/Backups/
 ```
 
 ### **Step 3B: Apply Tags to Your Workflows**
+
+<img src="assets/split_tag_organization_flow.png" width="700" alt="Split Tag Logic" />
+
 
 1. Go to n8n Dashboard → Workflows
 2. Click on any workflow you want to backup
@@ -215,6 +232,10 @@ By default, the workflow runs **daily at midnight**. To change:
    │   └── UntaggedWorkflow/
    │       └── workflow.json
    ```
+
+   > <img src="assets/v5_real_repo_structure.png" width="500" alt="GitHub Repo Structure" />
+   > *Verified GitHub Folder Hierarchy*
+
 
 ### **Step 5B: Monitor Backups**
 

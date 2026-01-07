@@ -1,5 +1,6 @@
-# GitHub Backup V5: Executive Summary
-## Enterprise-Grade Automation Architecture for Secure, Scalable Workflow Archival
+# n8n Workflow Backup to GitHub (V5): Executive Summary
+## Enterprise-Grade One-Way Archival for Secure, Scalable Automation
+
 
 ---
 
@@ -20,6 +21,10 @@ These aren't edge cases. They're **daily operational realities** for teams runni
 
 GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**—an industry-grade system that treats backup as *orchestration*, not just execution.
 
+> [!IMPORTANT]
+> **This is a One-Way Backup System (n8n → GitHub).** Changes made on GitHub are *not* synced back to n8n automatically. Restore is manual (import JSON).
+
+
 ### **Four Problems. Four Solutions.**
 
 | Problem | Traditional Approach | V5 Solution |
@@ -32,6 +37,9 @@ GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**�
 ---
 
 ## **Key Features at a Glance**
+
+<img src="assets/commit_efficiency_comparison.png" width="600" alt="Commit Efficiency" />
+
 
 ### 🛡️ **Security: Zero-Trust Redaction**
 - Scans entire workflow JSON (nodes, settings, credentials)
@@ -61,6 +69,9 @@ GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**�
 ---
 
 ## **Architecture Overview: Two Streams, One File**
+
+<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+
 
 ```
 ORCHESTRATION LAYER (Manager)

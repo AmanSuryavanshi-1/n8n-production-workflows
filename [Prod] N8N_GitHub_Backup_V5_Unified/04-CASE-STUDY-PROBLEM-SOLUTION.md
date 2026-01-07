@@ -1,5 +1,6 @@
-# GitHub Backup V5: Case Study & Problem-Solution Journey
-## How We Iterated From V1 to Enterprise-Grade Architecture
+# n8n Workflow Backup to GitHub (V5): Case Study & Problem-Solution Journey
+## How We Iterated From V1 to Enterprise-Grade One-Way Archival
+
 
 ---
 
@@ -12,6 +13,8 @@ This document chronicles the evolution of GitHub Backup, showing every problem w
 ## **Phase 1: The Naive Approach (V1)**
 
 ### **The Vision**
+
+
 "Let me just fetch all workflows and push them to GitHub. Simple."
 
 ### **What We Built**
@@ -246,6 +249,9 @@ Enterprise architects split for scalability. Solo developers need one file.
 ---
 
 ## **Phase 3: The Insight (V5 Breakthrough)**
+
+<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+
 
 ### **The Realization**
 

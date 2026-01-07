@@ -1,5 +1,6 @@
-# 🏗️ GitHub Backup V5: Technical Deep Dive
-## The Architecture That Solved Enterprise-Grade Automation Challenges
+# 🏗️ n8n Workflow Backup to GitHub (V5): Technical Deep Dive
+## Enterprise-Grade One-Way Archival from n8n to GitHub
+
 
 ---
 
@@ -50,7 +51,9 @@ STREAM B (Worker):                      Webhook Receive
 **Why This Matters:**
 
 1. **Manager** controls *when* to dispatch work (throttled by Wait node)
-2. **Worker** controls *how* to execute work (self-contained logic)
+2. **Worker** controls *how* to execute<img src="assets/v5_smart_search_logic_flow.png" width="700" alt="Smart Search Logic" />
+
+#### How It Works (The "No Ghost Files" Logic)
 3. If Worker crashes on item #5, Manager continues dispatching item #6
 4. All HTTP requests are rate-limited to 1 per 2 seconds = **30 req/min guaranteed**
 
@@ -66,6 +69,12 @@ The workflow triggers **itself via Webhook**. This is not a hack—it's a clean 
 ---
 
 ## **Part 2: Deep Dive into Each Component**
+
+<img src="assets/v5_canvas_overview.png" width="700" alt="V5 Unified Canvas Overview" />
+
+
+<img src="assets/v5_dual_stream_architecture.png" width="700" alt="Dual Stream Architecture" />
+
 
 ### 2.1 Stream A: The Manager (Orchestration Layer)
 
@@ -102,7 +111,8 @@ return $input.all().filter(item => item.json.isArchived !== true);
 - **Guarantee**: Even with 1000 workflows, you'll never hit 403
 
 **6. Call Worker Webhook**
-- POST request to `https://n8n.aviatorstrainingcentre.in/webhook/backup-worker`
+- POST request to `http://localhost:5678/webhook/backup-worker` (or your n8n instance URL)
+
 - Sends entire workflow JSON in request body
 - Response is acknowledged but not used (fire-and-forget pattern)
 
@@ -379,6 +389,9 @@ Manager waits 2 seconds → Dispatches 1 Worker → Worker completes (doesn't ma
 
 ### 4.2 Why Batch Size = 1
 
+
+
+
 **Alternative**: Batch Size = 10
 
 - Manager: Wait 2s → Dispatch 10 items → Manager continues
@@ -512,6 +525,9 @@ GitHub Folder: Internal/GitHub/Backups/WorkflowName.json
 
 ### 6.2 Character Sanitization
 
+<img src="assets/split_tag_organization_flow.png" width="700" alt="Split Tag Organization" />
+
+
 Unsafe characters are converted to underscores:
 ```
 Project: BIP | OmniPostAI
@@ -577,6 +593,9 @@ obj.level1.level2.level3.level4.level5.level6.level7.level8.level9.secretKey
 Our function finds and redacts it.
 
 ### 7.3 What Gets Redacted
+
+<img src="assets/v5_recursive_scrubbing_flow.png" width="700" alt="Recursive Scrubbing Logic" />
+
 
 ```json
 {
