@@ -16,6 +16,9 @@ We architected a **"Loop-to-Webhook" dual-stream system** that runs orchestratio
 - ✅ **Zero-Trust Security** with recursive credential redaction
 - ✅ **Split-Tag Deep Nesting** for infinite folder hierarchy
 
+> [!TIP]
+> **Want to implement this in your system?** Check out the complete [Implementation Guide](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/03-IMPLEMENTATION-GUIDE.md) for step-by-step setup instructions, configuration details, and best practices.
+
 ---
 
 ## **Part 1: The Architecture Philosophy**
@@ -784,6 +787,17 @@ The dual-stream architecture isn't a feature; it's a **philosophy**: every compo
 | Memory per Workflow | ~2-5 MB |
 | Security Coverage | 100% (recursive) |
 | False Positives | 0 (character-based matching) |
+
+---
+
+---
+
+## **📚 Quick Links**
+
+| Document | Description |
+|----------|-------------|
+| [Executive Summary](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/02-EXECUTIVE-SUMMARY.md) | High-level overview for stakeholders |
+| [Implementation Guide](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/03-IMPLEMENTATION-GUIDE.md) | Step-by-step setup instructions |
 
 ---
 

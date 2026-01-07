@@ -34,6 +34,9 @@ GitHub Backup V5 introduces the **"Loop-to-Webhook" dual-stream architecture**â€
 | **Ghost Files** | Track files by path only | Track files by ID; smart search relocates if moved on GitHub |
 | **Credential Leaks** | Manual review before commit | Recursive scrubbing of entire JSON tree before push |
 
+> [!TIP]
+> **Ready to deploy this in your system?** Follow the complete [Implementation Guide](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/03-IMPLEMENTATION-GUIDE.md) for step-by-step setup instructions.
+
 ---
 
 ## **Key Features at a Glance**
@@ -333,10 +336,19 @@ The result: **automated peace of mind**.
 
 ## **Next Steps**
 
-1. **Review** the Technical Documentation for architecture details
-2. **Follow** the Implementation Guide to set up in your n8n
+1. **Review** the [Technical Documentation](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/01-TECHNICAL-DOCUMENTATION.md) for architecture details
+2. **Follow** the [Implementation Guide](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/03-IMPLEMENTATION-GUIDE.md) to set up in your n8n
 3. **Customize** tagging strategy for your workflow organization
 4. **Monitor** alerts for first week, then set-and-forget
+
+---
+
+## **ðŸ“š Quick Links**
+
+| Document | Description |
+|----------|-------------|
+| [Technical Documentation](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/01-TECHNICAL-DOCUMENTATION.md) | Deep dive into architecture & code |
+| [Implementation Guide](https://github.com/AmanSuryavanshi-1/n8n-production-workflows/blob/main/%5BProd%5D%20N8N_GitHub_Backup_V5_Unified/03-IMPLEMENTATION-GUIDE.md) | Step-by-step setup instructions |
 
 ---
 
