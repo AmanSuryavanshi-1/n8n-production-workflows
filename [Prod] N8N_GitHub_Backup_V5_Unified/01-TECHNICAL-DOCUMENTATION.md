@@ -789,4 +789,4 @@ The dual-stream architecture isn't a feature; it's a **philosophy**: every compo
 **Document Version**: V1.0  
 **Last Updated**: January 2026  
 **Author**: Aman Suryavanshi  
-**Portfolio**: [Your Portfolio Website]
+**Portfolio**: [amansuryavanshi.me](https://www.amansuryavanshi.me/)
