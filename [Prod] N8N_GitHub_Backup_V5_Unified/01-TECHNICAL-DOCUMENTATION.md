@@ -71,7 +71,7 @@ The workflow triggers **itself via Webhook**. This is not a hack—it's a clean 
 
 ## **Part 2: Deep Dive into Each Component**
 
-<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_canvas_overview.webp" width="700" alt="V5 Unified Canvas Overview" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_canvas_overview.webp?v=2" width="700" alt="V5 Unified Canvas Overview" />
 
 
 <img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_dual_stream_architecture.webp" width="700" alt="Dual Stream Architecture" />

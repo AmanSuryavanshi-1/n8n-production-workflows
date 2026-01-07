@@ -79,7 +79,7 @@ You need a GitHub repository where backups will be stored.
 
 You should now see the "Antigravity - GitHub Backup V5" workflow in your dashboard.
 
-<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_canvas_overview.webp" width="700" alt="V5 Canvas Overview" />
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_canvas_overview.webp?v=2" width="700" alt="V5 Canvas Overview" />
 
 
 ### **Step 2B: Add GitHub Credentials**
