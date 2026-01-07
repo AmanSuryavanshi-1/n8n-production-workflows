@@ -51,7 +51,8 @@ STREAM B (Worker):                      Webhook Receive
 **Why This Matters:**
 
 1. **Manager** controls *when* to dispatch work (throttled by Wait node)
-2. **Worker** controls *how* to execute<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_smart_search_logic_flow.webp" width="700" alt="Smart Search Logic" />
+2. **Worker** controls *how* to execute
+<img src="https://cdn.jsdelivr.net/gh/AmanSuryavanshi-1/portfolio-assets@main/N8N-GithubBackup/v5_smart_search_logic_flow.webp" width="700" alt="Smart Search Logic" />
 
 #### How It Works (The "No Ghost Files" Logic)
 3. If Worker crashes on item #5, Manager continues dispatching item #6
